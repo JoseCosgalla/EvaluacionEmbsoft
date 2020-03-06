@@ -1,36 +1,38 @@
 ﻿@model IEnumerable<AeropuertoApp.Web.Models.Reservation.Vuelo>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.NumeroVuelo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Aerolinea)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AeropuertoOrigen)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AeropuertoDestino)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FechaHoraSalida)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DuracionViaje)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CostoEconomico)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CostoNormal)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CostoEjecutivo)
-        </th>
-        <th></th>
-    </tr>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroVuelo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Aerolinea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AeropuertoOrigen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AeropuertoDestino)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaHoraSalida)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DuracionViaje)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CostoEconomico)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CostoNormal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CostoEjecutivo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
 
 @foreach (var item in Model) {
     <tr>

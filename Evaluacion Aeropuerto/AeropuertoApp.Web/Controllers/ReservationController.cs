@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,17 +12,14 @@ namespace AeropuertoApp.Web.Controllers
         private Models.Reservation.GetAvailableFlghtsResponse GenerateGetAvailableFlights(DateTime? FechaInicio, DateTime? FechaFinal)
         {
             var database = new EntityFramework.Database.DatabaseEntityFramework();
-            var useCase = new UseCases.Interactors.GetVuelosInteractor(database);
+            var useCase = new UseCases.Interactors.GetVuelosInteractor(database, this._mapper);
             var request = new UseCases.Messages.GetVuelosDisponibles.GetVuelosDisponiblesRequestMessage();
 
-            request.FechaInicio = DateTime.Now.AddDays(-1);
-            request.FechaFinal = DateTime.Now;
-
-            if (request != null && request.FechaInicio.HasValue)
+            if (FechaInicio.HasValue && FechaInicio != DateTime.MinValue)
             {
                 request.FechaInicio = FechaInicio;
             }
-            if (request != null && request.FechaFinal.HasValue)
+            if (FechaFinal.HasValue && FechaFinal != DateTime.MinValue)
             {
                 request.FechaFinal = FechaFinal;
             }
@@ -30,7 +28,7 @@ namespace AeropuertoApp.Web.Controllers
             {
                 database.Open();
                 var response = useCase.Handle(request);
-                var vuelosResponse = AutoMapper.Mapper.Map<UseCases.Messages.GetVuelosDisponibles.Vuelo[], Models.Reservation.Vuelo[]>(response.Vuelos);
+                var vuelosResponse = this._mapper.Map<UseCases.Messages.GetVuelosDisponibles.Vuelo[], Models.Reservation.Vuelo[]>(response.Vuelos);
 
                 var responseWeb = new Models.Reservation.GetAvailableFlghtsResponse();
                 responseWeb.Request = null;
@@ -41,6 +39,11 @@ namespace AeropuertoApp.Web.Controllers
             {
                 database.Close();
             }
+        }
+        private IMapper _mapper;
+        public ReservationController(IMapper mapper)
+        {
+            this._mapper = mapper;
         }
 
         // GET: Reservation
@@ -68,7 +71,7 @@ namespace AeropuertoApp.Web.Controllers
         public ActionResult DoReservation(int? vueloId)
         {
             var database = new EntityFramework.Database.DatabaseEntityFramework();
-            var useCase = new UseCases.Interactors.FindVueloParaReservarInteractor(database);
+            var useCase = new UseCases.Interactors.FindVueloParaReservarInteractor(database, this._mapper);
             var request = new UseCases.Messages.FindVueloParaReservar.FindVueloParaReservarRequestMessage();
 
             request.VueloId = vueloId.Value;
@@ -78,14 +81,7 @@ namespace AeropuertoApp.Web.Controllers
                 database.Open();
                 var response = useCase.Handle(request);
                 // Mapear las propiedades
-                var vueloReservacionresponse = new Models.Reservation.DoReservation();
-                vueloReservacionresponse.AeropuertoOrigen = response.Vuelos.AeropuertoOrigen;
-                vueloReservacionresponse.AeropuertoDestino = response.Vuelos.AeropuertoDestino;
-                vueloReservacionresponse.CostoEconomico = response.Vuelos.CostoEconomico;
-                vueloReservacionresponse.CostoNormal = response.Vuelos.CostoNormal;
-                vueloReservacionresponse.CostoEjecutivo = response.Vuelos.CostoEjecutivo;
-                vueloReservacionresponse.VueloId = response.Vuelos.VueloId;
-                vueloReservacionresponse.NumeroVuelo = response.Vuelos.NumeroVuelo;
+                var vueloReservacionresponse = this._mapper.Map<UseCases.Messages.FindVueloParaReservar.Vuelo, Models.Reservation.DoReservation> (response.Vuelos);
 
                 var listaAsientos = new List<Models.Reservation.TicketAvailable>();
                 for (var i = 1; i <= response.Vuelos.CapacidadTotal; i++)
@@ -95,29 +91,11 @@ namespace AeropuertoApp.Web.Controllers
                         listaAsientos.Add(new Models.Reservation.TicketAvailable()
                         {
                             NumeroAsiento = i,
-                            TipoPasajero = 1
+                            TipoPasajero = Models.Enums.ETipoPasajero.Economico
                         });
                     }
                 }
                 vueloReservacionresponse.Tickets = listaAsientos;
-
-                var lista = new List<SelectListItem>();
-                lista.Add(new SelectListItem()
-                {
-                    Value = "1",
-                    Text = "Economico"
-                });
-                lista.Add(new SelectListItem()
-                {
-                    Value = "2",
-                    Text = "Normal"
-                });
-                lista.Add(new SelectListItem()
-                {
-                    Value = "3",
-                    Text = "Ejecutivo"
-                });
-                vueloReservacionresponse.ListaTiposPasajeros = new SelectList(lista, "Value", "Text", "1");
 
                 return View(vueloReservacionresponse);
             }
@@ -133,7 +111,7 @@ namespace AeropuertoApp.Web.Controllers
             int ClienteId = 1;
 
             var database = new EntityFramework.Database.DatabaseEntityFramework();
-            var useCase = new UseCases.Interactors.CreateReservacionVueloInteractor(database);
+            var useCase = new UseCases.Interactors.CreateReservacionVueloInteractor(database, this._mapper);
             var request = new UseCases.Messages.CreateReservacionVuelo.CreateReservacionVueloRequestMessage();
             request.VueloId = requestWeb.VueloId;
             request.ClienteId = ClienteId;
@@ -145,7 +123,7 @@ namespace AeropuertoApp.Web.Controllers
                     reservados.Add(new UseCases.Messages.CreateReservacionVuelo.AsientoReservado()
                     {
                         NumeroAsiento = reservacion.NumeroAsiento,
-                        TipoPasajero = reservacion.TipoPasajero
+                        TipoPasajero = (int)reservacion.TipoPasajero
                     });
                 }
             }
@@ -154,7 +132,15 @@ namespace AeropuertoApp.Web.Controllers
             {
                 database.Open();
                 var response = useCase.Handle(request);
-                database.Commit();
+                if (response.ValidationResult.IsValid)
+                {
+                    database.Commit();
+                } else
+                {
+                    Vereyon.Web.FlashMessage.Danger("No se pudo generar la reservación", response.ValidationResult.Error);
+                    database.Rollback();
+                    return View(requestWeb);
+                }
             } catch
             {
                 database.Rollback();

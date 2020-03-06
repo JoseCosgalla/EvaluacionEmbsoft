@@ -23,7 +23,6 @@ namespace AeropuertoApp.Web.Models.Reservation
         [Display(Name = "Costo ejecutivo")]
         public decimal CostoEjecutivo { get; set; }
         public List<TicketAvailable> Tickets { get; set; }
-        public SelectList ListaTiposPasajeros { get; set; }
 
         public DoReservation()
         {
@@ -36,6 +35,6 @@ namespace AeropuertoApp.Web.Models.Reservation
         public bool Selected { get; set; }
         public int Id { get; set; }
         public int NumeroAsiento { get; set; }
-        public int TipoPasajero { get; set; }
+        public Enums.ETipoPasajero TipoPasajero { get; set; }
     }
 }

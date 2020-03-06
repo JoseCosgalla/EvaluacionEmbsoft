@@ -52,7 +52,7 @@
     <Compile Include="Interactors\FindVueloParaReservarInteractor.cs" />
     <Compile Include="Interactors\CreateReservacionVueloInteractor.cs" />
     <Compile Include="Interactors\GetVuelosInteractor.cs" />
-    <Compile Include="Mapper\ObjectMapper.cs" />
+    <Compile Include="Mapper\UseCasesProfile.cs" />
     <Compile Include="Messages\FindVueloParaResevar\FindVueloParaReservarRequestMessage.cs" />
     <Compile Include="Messages\FindVueloParaResevar\FindVueloParaReservarResponseMessage.cs" />
     <Compile Include="Messages\FindVueloParaResevar\Vuelo.cs" />

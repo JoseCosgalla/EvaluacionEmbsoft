@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Linq;
 using AeropuertoApp.UseCases.Messages.GetVuelosDisponibles;
+using AutoMapper;
 
 namespace AeropuertoApp.UseCases.Interactors
 {
     public class GetVuelosInteractor : Base.IRequestHandler<GetVuelosDisponiblesRequestMessage, GetVuelosDisponiblesResponseMessage>
     {
         private readonly Domain.Queries.Base.IQuery<Domain.Vuelo> _vueloQuery;
+        private readonly IMapper _mapper;
 
-        public GetVuelosInteractor(EntityFramework.Database.IDataBaseSqlServerEntityFramework database)
+        public GetVuelosInteractor(EntityFramework.Database.IDataBaseSqlServerEntityFramework database, IMapper mapper)
         {
             this._vueloQuery = new EntityFramework.Queries.QueryBase<Domain.Vuelo>(database);
+            this._mapper = mapper;
         }
 
         public GetVuelosDisponiblesResponseMessage Handle(GetVuelosDisponiblesRequestMessage data)
@@ -40,7 +43,7 @@ namespace AeropuertoApp.UseCases.Interactors
             _vueloQuery.IncludeObject(q => q.Avion.Aerolinea);
             _vueloQuery.Sort("DESC", "FechaSalida");
             var vuelos = _vueloQuery.Execute();
-            var vuelosMapper = Mapper.ObjectMapper.Mapper.Map<Domain.Vuelo[], Messages.GetVuelosDisponibles.Vuelo[]>(vuelos.ToArray());
+            var vuelosMapper = this._mapper.Map<Domain.Vuelo[], Messages.GetVuelosDisponibles.Vuelo[]>(vuelos.ToArray());
 
             return new GetVuelosDisponiblesResponseMessage(Messages.Base.ValidationResult.CreateValidResult(), vuelosMapper);
         }
