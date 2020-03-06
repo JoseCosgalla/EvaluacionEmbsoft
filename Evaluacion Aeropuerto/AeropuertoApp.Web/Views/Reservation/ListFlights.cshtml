@@ -1,0 +1,70 @@
+﻿@model IEnumerable<AeropuertoApp.Web.Models.Reservation.Vuelo>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.NumeroVuelo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Aerolinea)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AeropuertoOrigen)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AeropuertoDestino)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FechaHoraSalida)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DuracionViaje)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CostoEconomico)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CostoNormal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CostoEjecutivo)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.NumeroVuelo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Aerolinea)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AeropuertoOrigen)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AeropuertoDestino)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FechaHoraSalida)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DuracionViaje)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CostoEconomico)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CostoNormal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CostoEjecutivo)
+        </td>
+        <td>
+            @Html.ActionLink("Reservar", "DoReservation", new { VueloId = item.VueloId }, new { @class = "btn-sm btn-primary" })
+        </td>
+    </tr>
+}
+
+</table>

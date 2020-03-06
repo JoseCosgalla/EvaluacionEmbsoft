@@ -1,0 +1,99 @@
+﻿@model AeropuertoApp.Web.Models.Reservation.DoReservation
+
+@{
+    ViewBag.Title = "Reservar asientos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Reservar asientos</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.VueloId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AeropuertoOrigen, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.AeropuertoOrigen, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.AeropuertoOrigen, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.AeropuertoDestino, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.AeropuertoDestino, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.AeropuertoDestino, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CostoEconomico, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CostoEconomico, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.CostoEconomico, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CostoNormal, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CostoNormal, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.CostoNormal, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CostoEjecutivo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CostoEjecutivo, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.CostoEjecutivo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <table class="table table">
+            <caption>Seleccionar los boletos que desea</caption>
+
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        Asiento
+                    </th>
+                    <th>
+                        Tipo de pasajero
+                    </th>
+                </tr>
+            </thead>
+            @for (int i = 0; i < Model.Tickets.Count; i++)
+            {
+            <tr>
+                <td scope="col">
+                    @Html.HiddenFor(m => Model.Tickets[i].NumeroAsiento)
+                    @Html.CheckBoxFor(m => Model.Tickets[i].Selected)
+                </td>
+                <td scope="col">
+                    @Html.DisplayFor(m => Model.Tickets[i].NumeroAsiento)
+                </td>
+                <td scope="col">
+                    @Html.DropDownListFor(m => Model.Tickets[i].TipoPasajero, Model.ListaTiposPasajeros)
+                </td>
+            </tr>
+            }
+        </table>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Reservar" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
